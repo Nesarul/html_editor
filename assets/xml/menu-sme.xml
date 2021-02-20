@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Menu>
+    
+    <item>
+        <caption>Dashboard</caption>
+        <link>../dashboard/index.php</link>
+        <image>fab fa-windows</image>
+    </item>
+    <item>
+        <caption>In Progress</caption>
+        <link>../units/index.php</link>
+        <image>fas fa-folder-open</image>
+    </item>
+    <item>
+        <caption>Approved</caption>
+        <link>../units/closed_units.php</link>
+        <image>far fa-check-circle</image>
+    </item>
+    <item>
+        <caption>Change Password</caption>
+        <link>../admin/cp.php</link>
+        <image>fas fa-exchange-alt</image>
+    </item>
+    <item>
+        <caption>Profile</caption>
+        <link>../admin/profile.php</link>
+        <image>far fa-address-card</image>
+    </item>
+    <item>
+        <caption>Logout</caption>
+        <link>../admin/logout.php?logout=1</link>
+        <image>fas fa-sign-out-alt</image>
+    </item>
+</Menu>
