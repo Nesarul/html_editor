@@ -2,7 +2,7 @@
     require_once('./db/db.php');
     require_once('./function.php');
     setTimezone();
-    $resonse = array(
+    $response = array(
         'Status' => 0,
         'Message' => ''
     );
@@ -42,7 +42,7 @@
     if(isset($_POST['new_course']) && !empty($_POST['new_course']))
     {
         $course = $_POST['new_course'];
-        $sme = empty($_POST['sme']) ? NULL:$_POST['sme'];
+        $sme = empty($_POST['sme_name_course']) ? NULL:$_POST['sme_name_course'];
         $message = course::getInstance()->create($course,$sme,$title,$css_path,$js_path);
     }    
     echo json_encode($response);
