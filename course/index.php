@@ -363,7 +363,7 @@ function viewHeader(e){
     $.ajax({
         type: "POST",
         url:'../admin/get_header.php',
-        data:{cid:'1'},
+        data:{cid:e},
         dataType: 'json',
         success: function(response){
             $('#headerText').html(response.message);
@@ -380,7 +380,7 @@ function viewFooter(e){
     $.ajax({
         type: "POST",
         url:'../admin/get_footer.php',
-        data:{cid:'1'},
+        data:{cid:e},
         dataType: 'json',
         success: function(response){
             $('#footerText').html(response.message);

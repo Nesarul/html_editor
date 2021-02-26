@@ -63,6 +63,9 @@ class course{
         $this->_results = htmlEditor::getDb()->query("SELECT * FROM ".$this->getTable())->getResults();
         return $this;
     }
+    public function getCourse($id){
+        return htmlEditor::getDb()->get($this->getTable(),array('course_id','=',$id))->getResults();
+    }
     public function create($course,$sme,$title,$css_path,$js_path){
         if(htmlEditor::getDb()->insert($this->getTable(),array('course_name' => $course,'date_created' => htmlEditor::getTime(),'author' => htmlEditor::getSSN()->user,'sme' => $sme,'c_title'=>$title,'c_css'=>$css_path,'c_js'=>$js_path))){
             $message['error']="0";

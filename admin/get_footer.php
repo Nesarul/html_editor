@@ -1,12 +1,12 @@
 <?php
-require_once('./db/db.php');
+require_once('./function.php');
 $response = array(
     'message' => 'blank',
     'status' => '0'
 );
 if(isset($_POST["cid"]) && !empty($_POST['cid']))
 {
-    $x = db::getInstance()->get('course',array('course_id','=',$_POST['cid']))->getResults();
+    $x = course::getInstance()->getCourse($_POST['cid']);
     $response['message'] = $x[0]->c_footer;
     
 }
