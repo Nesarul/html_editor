@@ -161,7 +161,7 @@ form.form-login{
     display:inline-block;
     right:15px;
 }
-.course_title .id_no{
+span .id_no{
     display:none;
 }
 
@@ -182,4 +182,35 @@ span.n2d{
 	font-weight: bold;
 	color: red;
 	box-shadow: 1px 1px 4px rgba(128,128,0,0.5);
+}
+
+/* Custom List */
+[class*="-list"]{
+    width: 100%;
+    display:block;
+    padding:8px 15px;
+    text-decoration:none;
+    color:#333;
+}
+[class*="-list"]::before{
+    display:inline-block;
+    min-width:20px;
+    content: "\f07c";
+    color: #f5c71a;
+    font-family: 'Font Awesome 5 pro';
+    font-size:18px;
+    font-weight: 900;
+}
+.collapsed::before{
+    display:inline-block;
+    content: "\f07b";
+    color: #f5c71a;
+    font-family: 'Font Awesome 5 pro';
+    font-size:18px;
+    font-weight: 900;
+}
+.page-list::before{
+    content:'\f1c9';
+    color:#333;
+    font-weight:400;
 }

@@ -1,6 +1,6 @@
 <?php
     require_once('../admin/db/db.php');
-    $sql = "SELECT u.unit_name,u.unit_title,u.unit_contents,c.c_title, c.c_css,c.c_js, c_footer FROM unit AS u LEFT JOIN course AS c ON c.course_id = u.course_id WHERE u.unit_id = ?";
+    $sql = "SELECT u.unit_name,u.unit_title,u.unit_contents,c.c_title, c.c_css,c.c_js, c_footer, c.footer_caption FROM unit AS u LEFT JOIN course AS c ON c.course_id = u.course_id WHERE u.unit_id = ?";
     $res = db::getInstance()->query($sql,array($_GET['uid']))->getResults();
     if(null == $res)
         exit(0);
@@ -32,7 +32,9 @@
 <script>
     $(function(){
         var pk = "<?php echo $res[0]->unit_title; ?>";
+        var fc = "<?php echo $res[0]->footer_caption; ?>";
         $('#header-box h1').html(pk);
+        $('<style>#footer>.copyright::after{content:"'+fc+'";}</style>').appendTo('head');
     });
 </script>
 

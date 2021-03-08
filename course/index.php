@@ -27,50 +27,81 @@
         <?php endforeach; ?>
     </ul>
 </div>
+
+<style>
+   .btn-sna{
+        line-height:1;
+        width:25px;
+        height:25px;
+        font-size:12px;
+        padding:0;
+    }
+</style>
+
 <div class="right-bar">
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 my-3">
                 <h2><i class="fas fa-laptop-house"></i> Course</h2><hr>
             </div>
-            <div class="col-12">   
+            <div class="col-12 my-3">   
                 <a type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#createCourse">Create Course</a>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <caption></caption>
-                        <thead>
-                            <tr class="text-center">
-                                <th>Title</th>
-                                <th>Created</th>
-                                <th>Author</th>
-                                <th>Admin</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                                $res = course::getInstance()->getAll()->getResults();
-                                foreach($res as $key => $rec):
-                            ?>
-                            <tr>
-                                <td contenteditable='true' class="course_title"><?php echo '<span class="id_no">'.$rec->course_id.'</span><span>'. $rec->course_name .'</span>'; ?></td>
-                                <td><?php echo $rec->date_created; ?></td>
-                                <td><?php echo $rec->author; ?></td>
-                                <td class="text-center">
-                                    <div class="btn-group-sm" role="group" aria-label="Basic example">
-                                        <button  type="button" id="<?php echo "edit-".$rec->course_id; ?>" class="btn btn-primary btn-sm" onClick="course_edit(this.id);"><i class="far fa-edit"></i></button>
-                                        <button  type="button" id="<?php echo "course-".$rec->course_id."-".$rec->sme; ?>" class="btn btn-success btn-sm" onClick="newUnit(this.id);"><i class="far fa-file-alt"></i></button>
-                                        <button  type="button" id="<?php echo "course1-".$rec->course_id; ?>" class="btn btn-danger btn-sm" onClick="deleteCourse(<?php echo $rec->course_id; ?>);"><i class="fas fa-trash-alt"></i></button>
-                                        <button  type="button" id="<?php echo "header-".$rec->course_id; ?>" class="btn btn-secondary btn-sm" onClick="viewHeader(<?php echo $rec->course_id; ?>);"><i class="fas fa-headset"></i></button>
-                                        <button  type="button" id="<?php echo "footer-".$rec->course_id; ?>" class="btn btn-secondary btn-sm" onClick="viewFooter(<?php echo $rec->course_id; ?>);"><i class="fas fa-shoe-prints"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
             </div>
-        </div>
+
+            <!-- New Style -->
+            <?php 
+                $res = course::getInstance()->getAll()->getResults();
+                $i = 0;
+                foreach($res as $key => $rec):
+                    ++$i;
+            ?>
+            <div class="row align-items-center mb-1" style="background-color:#ddd">
+                <div class="col-5">
+                    <a class="course-list collapsed" contenteditable="true" data-bs-toggle="collapse" href="#collapse-course-<?php echo $rec->course_id; ?>" role="button" aria-expanded="false" aria-controls="collapse-course-<?php echo $rec->course_id; ?>">
+                        <?php echo $rec->course_name; ?>
+                    </a>
+                </div>
+                <div class="col-3"><?php echo $rec->date_created; ?></div>
+                <div class="col-2"><?php echo $rec->author; ?></div>
+                <div class="col-2">
+                    <button type="button" id="<?php echo "edit-".$rec->course_id; ?>" class="btn btn-primary btn-sna" onClick="course_edit(this.id);"><i class="far fa-edit"></i></button>
+                    <button type="button" id="<?php echo "course-".$rec->course_id."-".$rec->sme; ?>" class="btn btn-success btn-sna" onClick="newUnit(this.id);"><i class="far fa-file-alt"></i></button>
+                    <button type="button" id="<?php echo "course1-".$rec->course_id; ?>" class="btn btn-danger btn-sna" onClick="deleteCourse(<?php echo $rec->course_id; ?>);"><i class="fas fa-trash-alt"></i></button>
+                    <button type="button" id="<?php echo "header-".$rec->course_id; ?>" class="btn btn-secondary btn-sna" onClick="viewHeader(<?php echo $rec->course_id; ?>);"><i class="fas fa-headset"></i></button>
+                    <button type="button" id="<?php echo "footer-".$rec->course_id; ?>" class="btn btn-secondary btn-sna" onClick="viewFooter(<?php echo $rec->course_id; ?>);"><i class="fas fa-shoe-prints"></i></button> 
+                </div>
+           
+                <div class="collapse" id="collapse-course-<?php echo $rec->course_id; ?>">
+                    <div class="card card-body">
+                        <!-- Unit Collapse-->
+                        <?php 
+                            $resUnit = unit::getInstance()->getUnits($rec->course_id);
+                            $j = 0;
+                            foreach($resUnit as $keyUnit => $recUnit):
+                        ?>
+                         <a class="course-list collapsed" data-bs-toggle="collapse" href="#collapse-unit-<?php echo $recUnit->unit_id; ?>" role="button" aria-expanded="false" aria-controls="collapse-unit-<?php echo $recUnit->unit_id; ?>">
+                            <?php echo $recUnit->unit_name; ?>
+                        </a>
+                        <div class="collapse" id="collapse-unit-<?php echo $recUnit->unit_id; ?>">
+                            <div class="card card-body">
+                                <!-- Page Collapse -->
+                                <?php 
+                                    $resPage = pages::getInstance()->getPages($rec->course_id,$recUnit->unit_id);
+                                    foreach($resPage as $keyPage => $recPage):
+                                ?>
+                                    <a href="" class="page-list"><?php echo $recPage->page_caption; ?></a>
+                                <?php endforeach ?>
+                                <!-- Page Collapse -->
+                            </div>
+                        </div>  
+                        <?php endforeach; ?>                             
+                        <!-- Unit Collapse-->
+                    </div>
+                </div>
+             </div>
+             <?php endforeach; ?>
+            <!-- End of New style -->
+    </div>
 
         <!-- New course -->
         <div class="modal fade" id="createCourse" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="createCourseLabel" aria-hidden="true">
@@ -218,6 +249,10 @@
                 </div>
                 <div class="modal-body">
                     <form action="" method="post" id="frmUpdateFooter">
+                        <div class="mb-3">
+                            <label for="footer_caption">Footer caption</label>
+                            <input type="text" name="footer_caption" id="footer_caption" placeholder="Footer Caption here" class="w-100">
+                        </div>
                         <div class="form-floating">
                             <textarea class="form-control" placeholder="Header codes here" id="footerText" name="footerText" style="height: 200px"></textarea>
                             <label for="footerText">Footer Codes</label>
@@ -384,6 +419,7 @@ function viewFooter(e){
         dataType: 'json',
         success: function(response){
             $('#footerText').html(response.message);
+            $('#footer_caption').val(response.footer);
             $('#viewFooter').modal('show');
         },
         error: function(){

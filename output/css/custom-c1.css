@@ -1,4 +1,7 @@
 /* Default Font Sizes */
+:root {
+    --fc: "This is the text";
+}
 .n2d{background-color: #ff6;padding:10px;font-weight: bold;color: red;box-shadow: 1px 1px 4px rgba(128,128,0,0.5);border-radius: 5px;}
 span.n2d{background-color: #ff6;padding:0px 10px;font-weight: bold;color: red;box-shadow: 1px 1px 4px rgba(128,128,0,0.5);}
 #header-box,
@@ -32,8 +35,8 @@ span.n2d{background-color: #ff6;padding:0px 10px;font-weight: bold;color: red;bo
     left:6.5rem;
     top:1rem;
     font-size: 1.25rem;
-    content:"\00A9  GNED219 - Canadian Immigration History \A Second Line of Text";
-    /* content:"\00A9  OAGN - Document Production"; */
+    /* content:"\00A9  GNED219 - Canadian Immigration History \A Second Line of Text"; */
+    content: var(--fc);
 }
 
 #footer>.copyright>p{

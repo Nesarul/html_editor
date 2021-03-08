@@ -179,3 +179,34 @@ class users{
         htmlEditor::getDb()->delete($this->getTable(),$params);
     }    
 }
+
+class pages{
+    private static $_instance = null;
+    private $_message = array(
+        'error' => "1",
+        'Message' => "Something Wrong Happen"
+    );
+    
+    private function __construct() {
+        self::$_instance = $this;
+    }
+
+    public static function getInstance(){
+        if (self::$_instance === null) {
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+    private function getTable(){
+        return get_class($this);
+    }
+    
+    function delete($params){
+        htmlEditor::getDb()->delete($this->getTable(),$params);
+    }
+    function getPages($courseID,$unitID){
+        
+        $sql = "SELECT * FROM pages WHERE unit_id = ? AND course_id = ?";
+        return htmlEditor::getDb()->query($sql,$params = array($unitID,$courseID))->getResults();     
+    }
+}

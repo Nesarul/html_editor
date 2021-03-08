@@ -8,7 +8,7 @@
     
     require_once('../assets/inc/header.php');        
 ?>
-<script src="../admin/src/js/jquery-ui/jquery-ui.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js" integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E=" crossorigin="anonymous"></script>
 <!-- leftbar -->
 <div class="left-bar">
     <p class="text-center"><img src="../assets/images/logo.png" alt="" width="50%"></p>
@@ -39,7 +39,7 @@
                     <table class="table table-hover">
                         <caption></caption>
                         <thead>
-                            <tr>
+                            <tr class="text-center">
                                 <th>Title</th>
                                 <th>Created</th>
                                 <th>Author</th>
@@ -48,17 +48,21 @@
                         </thead>
                         <tbody>
                             <?php 
-                                $res = db::getInstance()->query("SELECT * FROM course")->getResults();
+                                $res = course::getInstance()->getAll()->getResults();
                                 foreach($res as $key => $rec):
                             ?>
                             <tr>
                                 <td contenteditable='true' class="course_title"><?php echo '<span class="id_no">'.$rec->course_id.'</span><span>'. $rec->course_name .'</span>'; ?></td>
                                 <td><?php echo $rec->date_created; ?></td>
                                 <td><?php echo $rec->author; ?></td>
-                                <td>
-                                    <button  type="button" id="<?php echo "edit-".$rec->course_id; ?>" class="btn btn-primary btn-sm" onClick="course_edit(this.id);"><i class="far fa-edit"></i></button>
-                                    <button  type="button" id="<?php echo "course-".$rec->course_id."-".$rec->sme; ?>" class="btn btn-success btn-sm" onClick="newUnit(this.id);"><i class="far fa-file-alt"></i></button>
-                                    <button  type="button" id="<?php echo "course1-".$rec->course_id; ?>" class="btn btn-danger btn-sm" onClick="deleteCourse(<?php echo $rec->course_id; ?>);"><i class="fas fa-trash-alt"></i></button>
+                                <td class="text-center">
+                                    <div class="btn-group-sm" role="group" aria-label="Basic example">
+                                        <button  type="button" id="<?php echo "edit-".$rec->course_id; ?>" class="btn btn-primary btn-sm" onClick="course_edit(this.id);"><i class="far fa-edit"></i></button>
+                                        <button  type="button" id="<?php echo "course-".$rec->course_id."-".$rec->sme; ?>" class="btn btn-success btn-sm" onClick="newUnit(this.id);"><i class="far fa-file-alt"></i></button>
+                                        <button  type="button" id="<?php echo "course1-".$rec->course_id; ?>" class="btn btn-danger btn-sm" onClick="deleteCourse(<?php echo $rec->course_id; ?>);"><i class="fas fa-trash-alt"></i></button>
+                                        <button  type="button" id="<?php echo "header-".$rec->course_id; ?>" class="btn btn-secondary btn-sm" onClick="viewHeader(<?php echo $rec->course_id; ?>);"><i class="fas fa-headset"></i></button>
+                                        <button  type="button" id="<?php echo "footer-".$rec->course_id; ?>" class="btn btn-secondary btn-sm" onClick="viewFooter(<?php echo $rec->course_id; ?>);"><i class="fas fa-shoe-prints"></i></button>
+                                    </div>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
@@ -104,7 +108,7 @@
                 </div>
             </div>
         </div>
-       
+        
         <!-- Edit course -->
         <div class="modal fade" id="editCourse" tabindex="-1" aria-labelledby="editCourseLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -118,21 +122,22 @@
                             <table class="table table-hover" id="table">
                                 <thead>
                                     <tr>
-                                        <th class="d-none">id</th>
                                         <th>Unit Name</th>
                                         <th>Created</th>
                                         <th>Author</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                <tbody id="tbody">
+                                <tbody>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" id="create_unit" onClick="ordPermanent();">Make order list Permanent</button>
+                    </div>
                     </div>
                 
                 </div>
@@ -179,25 +184,59 @@
             </div>
         </div>
 
-        <!-- Delete Course -->
-        <style>.agreement-stripe{width:100%;padding:15px;margin:0;background-color:rgb(96,8,8);color:white;}.btn-close {background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;}</style>
-        <div class="modal fade" id="delete_course" data-course="" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="delete_courseLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        <!-- View Header -->
+        <div class="modal fade" id="viewHeader" tabindex="-1" aria-labelledby="viewHeaderLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                    <div class="modal-header agreement-stripe">
-                        <h5 class="modal-title" id="delete_courseLabel"><i class="far fa-folder-open"></i> Delete Course</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Deleting a course will remove all associated units and pages, Do you agree?</p>                    
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                        <button type="button" class="btn btn-primary" id="btn-confirm-delete">Yes</button>
-                    </div>
+                <div class="modal-header"  style="background-color:#212F3C;color:white">
+                    <h5 class="modal-title" id="viewHeaderLabel"><i class="fas fa-headset"></i> View Header</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post">
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Header codes here" id="headerText" style="height: 200px"></textarea>
+                            <label for="headerText">Header Codes</label>
+                        </div>
+                    </form>                                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="create_unit" onClick="updateHeader();" disabled>Update</button>
+                </div>
                 </div>
             </div>
         </div>
+
+        <!-- View Footer -->
+        <div class="modal fade" id="viewFooter" tabindex="-1" aria-labelledby="viewFooterLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                <div class="modal-header"  style="background-color:#212F3C;color:white">
+                    <h5 class="modal-title" id="viewFooterLabel"><i class="fas fa-shoe-prints"></i> View Footer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" id="frmUpdateFooter">
+                        <div class="mb-3">
+                            <label for="footer_caption">Footer caption</label>
+                            <input type="text" name="footer_caption" id="footer_caption" placeholder="Footer Caption here" class="w-100">
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" placeholder="Header codes here" id="footerText" name="footerText" style="height: 200px"></textarea>
+                            <label for="footerText">Footer Codes</label>
+                        </div>
+                    </form>                                
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-id="" id="update-footer" onClick="updateFooter();">Update</button>
+                </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
 
@@ -206,8 +245,6 @@ function createCourse()
 {
     let myForm = document.getElementById('cc');
     let formData = new FormData(myForm);
-    var cm = $('#sme_name_course option:selected').val();
-    cm != '' ? formData.append('sme', cm):'';
     $.ajax({
         type: 'POST',
         url: '../admin/create_course.php',
@@ -218,11 +255,12 @@ function createCourse()
         processData:false,
         success:function(response)
         { 
-            $("#createCourse").modal("hide");
-            location.reload();
+            alert(response.Message);
+            $("#newUser").modal("hide");
+            localtion.remoad();
         },
         error:function(response){
-            alert("Something Wrong Happen.");
+            alert("Something went serious Wrong!");
         }
     });      
 }
@@ -242,7 +280,7 @@ function course_edit(e)
             var x = JSON.parse(data);
             var le = x.length;
             for(p = 0; p< le; p++)
-                rowContent +='<tr><td class="d-none unitID">'+ x[p]['unit_id'] +'</td><td>'+x[p]['unit_name']+' - '+x[p]['unit_title']+'</td><td>'+x[p]['unit_created']+'</td><td>'+x[p]['unit_author']+'</td><td><a  type="button" id="read_unit-'+x[p]["unit_id"]+'" class="btn btn-success btn-sm" href="read_course.php?id='+x[p]["unit_id"]+'">Edit</a></td></tr>'
+                rowContent +='<tr><td class="d-none unitID">'+ x[p]['unit_id'] +'</td><td>'+x[p]['unit_name']+'</td><td>'+x[p]['unit_created']+'</td><td>'+x[p]['unit_author']+'</td><td><a  type="button" id="read_unit-'+x[p]["unit_id"]+'" class="btn btn-success btn-sm" href="read_course.php?id='+x[p]["unit_id"]+'&amp;course='+no+'">Edit</a></td></tr>'
             
             $('#edit_unit_list tbody').html(rowContent);
         }
@@ -262,17 +300,7 @@ function createUnit()
 {
     var x = $('#createUnit').data("course");
     var unitName = $('#new_unit').val();
-    if(unitName == '')
-    {
-        alert("Please Enter a Unit Name");
-        return;
-    }
     var title = $('#page_title').val();
-    if(title == '')
-    {
-        alert("Please Enter Unit Title");
-        return;
-    }
     var sme = $('#sme_name option:selected').val();
 
     if(sme == '')
@@ -292,7 +320,7 @@ function createUnit()
             location.reload();
         },
         error: function(){
-            alert("Something wrong happen.");
+            alert("it sucks");
         }
 });
 }
@@ -318,13 +346,83 @@ $('.course_title').unbind().focusout(function(){
 
 function deleteCourse(e)
 {
-    $('#delete_course').data('course',e);
-    $('#delete_course').modal("show");
+    var response = confirm("Are you Sure you want to delete this course\nIt will also delete all related units file. The Operation Cannot be Undone!");
+    if(response)
+    {
+        $.ajax({
+            type: "POST",
+            url:'../admin/delete_course.php',
+            data:{id:e},
+            success: function(data)
+            {
+                location.reload();
+            }
+        });
+    }else{
+        alert("Void");
+    }
 }
 
+function viewHeader(e){
+    $.ajax({
+        type: "POST",
+        url:'../admin/get_header.php',
+        data:{cid:e},
+        dataType: 'json',
+        success: function(response){
+            $('#headerText').html(response.message);
+            $('#viewHeader').modal('show');
+        },
+        error: function(){
+            alert("Something wrong happen.");
+        }
 
-//   $('#table tbody').sortable();
+    });
+}
+function viewFooter(e){
+    $('#update-footer').data('id',e);
+    $.ajax({
+        type: "POST",
+        url:'../admin/get_footer.php',
+        data:{cid:e},
+        dataType: 'json',
+        success: function(response){
+            $('#footerText').html(response.message);
+            $('#footer_caption').val(response.footer);
+            $('#viewFooter').modal('show');
+        },
+        error: function(){
+            alert("Something wrong happen.");
+        }
 
+    });
+}
+
+function updateFooter(){
+    let myForm = document.getElementById('frmUpdateFooter');
+    let formData = new FormData(myForm);
+    formData.append('id',$('#update-footer').data('id'));
+    $.ajax({
+        type: 'POST',
+        url: '../admin/update_footer.php',
+        data: formData,
+        dataType: 'json',
+        contentType: false,
+        cache: false,
+        processData:false,
+        success:function(response)
+        { 
+            alert(response.message);
+            $("#viewFooter").modal("hide");
+        },
+        error:function(response){
+            alert("Something went Wrong.");
+        }
+    });  
+}
+function updateHeader(e){
+
+}
 $('#table').sortable({
        items: "tr",
         cursor:"move",
@@ -340,9 +438,9 @@ $('#table').sortable({
         //     });
         // }
 });
-    function ordPermanent(){
+function ordPermanent(){
         var ary = [];
-        $('.table tbody tr').each(function (a, b) {
+        $('#table tbody tr').each(function (a, b) {
             var uid = $('.unitID', b).text();
             if(uid != "") ary.push({ unit_id: uid});
         });
@@ -361,17 +459,6 @@ $('#table').sortable({
             }
         });  
     }
-    $('#btn-confirm-delete').on('click',function(){
-        $.ajax({
-            type: "POST",
-            url:'../admin/delete_course.php',
-            data:{id:$('#delete_course').data('course')},
-            success: function(data)
-            {
-                location.reload();
-            }
-        });
-    });
 </script>
 
 <?php
