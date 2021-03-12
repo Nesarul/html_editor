@@ -5,14 +5,17 @@
         header("Location: ../index.php");
     require_once('../assets/inc/header.php');        
 
-    $page = 0;
+    $id = 0;
+    $course = 0;
+    $unit = 0;
     $res = null;
-    if(isset($_GET['page'])){
-        $page = trim($_GET["page"]);
-    }else exit(0);
+    if(isset($_GET['id'])){
+        $id = trim($_GET['id']);
+        $course = trim($_GET["course"]);
+    }
 
-    if($page){
-        $res = pages::getInstance()->getPageContents($page);
+    if($id){
+        $res = db::getInstance()->get('unit',array('unit_id','=',$id))->getResults();
         empty($res) ? exit(0): '';
     } else exit(0);
 ?>
@@ -45,7 +48,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 my-3 shade mt-0">
-                <h3 class="py-3"><?php if($res != null) echo '<span id=n-"'.$res[0]->unit_name.'" class="unit_name" contenteditable="true">'.$res[0]->unit_name.'</span>'.': <span id=t-"'.$res[0]->unit_name.'" class="unit_title" contenteditable="true">'.$res[0]->page_caption.'</span>'; ?></h4>
+                <h3 class="py-3"><?php if($res != null) echo '<span id=n-"'.$res[0]->unit_id.'" class="unit_name" contenteditable="true">'.$res[0]->unit_name.'</span>'.': <span id=t-"'.$res[0]->unit_id.'" class="unit_title" contenteditable="true">'.$res[0]->unit_title.'</span>'; ?></h4>
             </div>
             <style>
                 [class^="notif"]{
@@ -69,33 +72,36 @@
                 <div class="row">
                     <div class="col-6">
                         <!-- <a class="btn btn-success dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Select Unit</a> -->
-                        <a class="btn btn-outline-success dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Select Page</a>
+                        <a class="btn btn-outline-success dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">Select Unit</a>
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <?php 
-                                if($page != ""):
-                                    $ut = pages::getInstance()->getPages($res[0]->unit_id);
+                                if($course != ""):
+                                    $ut = db::getInstance()->get('unit',array('course_id','=',$course))->getResults();
                                     foreach($ut as $key => $utrec):
                             ?>
-                            <li><a class="dropdown-item" href="read_course.php?page=<?php echo $utrec->page_id; ?>"><?php echo $utrec->page_caption; ?></a></li>
+                            <li><a class="dropdown-item" href="read_course.php?id=<?php echo $utrec->unit_id; ?>&amp;course=<?php echo $utrec->course_id; ?>"><?php echo $utrec->unit_name.' '.$utrec->unit_title; ?></a></li>
                             <?php endforeach; endif; ?>
                         </ul>
                     </div>
                     <style>.btn-mod,.btn-mod:hover{background-color: #23A6D7;}</style>
                     <div class="col-6">
-                        <?php if($res[0]->page_status != "1"): ?>
-                            <p class="text-end"><a href="../output/view.php?pageID=<?php echo $res[0]->page_id; ?>" class="btn btn-success btn-mod" target="_blank"><i class="far fa-eye"></i> View Page</a> <button type="button" class="btn btn-success notif-inprogress" data-bs-toggle="modal" data-bs-target="#info-sme"><i class="fas fa-lock-open"></i> In Progress</button></p>
+                        <?php if($res[0]->unit_status != "1"): ?>
+                            <p class="text-end"><a href="../output/view.php?uid=<?php echo $id; ?>" class="btn btn-success btn-mod" target="_blank"><i class="far fa-eye"></i> View Page</a> <button type="button" class="btn btn-success notif-inprogress" data-bs-toggle="modal" data-bs-target="#info-sme"><i class="fas fa-lock-open"></i> In Progress</button></p>
                         <?php else: ?>
-                            <p class="text-end"><a href="../output/view.php?pageID=<?php echo $res[0]->page_id; ?>" class="btn btn-success btn-mod" target="_blank"><i class="far fa-eye"></i> View Page</a> <button type="button" class="btn btn-danger notif-approved" onClick="info_adm();"><i class="fas fa-lock"></i> Approved</span></button></p>
+                            <p class="text-end"><a href="../output/view.php?uid=<?php echo $id; ?>" class="btn btn-success btn-mod" target="_blank"><i class="far fa-eye"></i> View Page</a> <button type="button" class="btn btn-danger notif-approved" onClick="info_adm();"><i class="fas fa-lock"></i> Approved</span></button></p>
                         <?php endif; ?>                
                     </div>
                 </div>
 
                 <form form action="post.php" method="post">
-                    <input type="hidden" name="idno" value="<?php echo $res[0]->page_id; ?>"/>
+                    <input type="hidden" name="idno" value="<?php echo $id; ?>"/>
                     <textarea id="myTextarea" name = "contents">
                         <?php 
                             if($res != null)
-                                echo $res[0]->page_contents;
+                            {
+                                // echo htmlspecialchars_decode($res[0]->unit_contents);
+                                echo $res[0]->unit_contents;
+                            }
                         ?>
                     </textarea>
                 </form>
@@ -188,7 +194,7 @@
             type: "POST",
             url:'status.php',
             dataType: 'json',
-            data:{id:<?php echo $res[0]->page_id; ?>},
+            data:{id:<?php echo $id; ?>,course:<?php echo $course; ?>},
             success: function(response){
                 tinymce.activeEditor.setMode(response.message != "0" ? 'readonly' : 'design');
             },
@@ -211,9 +217,9 @@
     $('#bn-agree').on('click',function(){
         $.ajax({
             type: "POST",
-            url:'../admin/approve_page.php',
+            url:'../admin/approve_unit.php',
             dataType: 'json',
-            data:{id:<?php echo $res[0]->page_id; ?>},
+            data:{id:<?php echo $id; ?>},
             success: function(response){
                 $('#info-sme').modal("hide");
                 location.reload();
@@ -239,9 +245,9 @@
     $('#bn-agree-2').on('click',function(){
         $.ajax({
             type: "POST",
-            url:'../admin/rollback_page.php',
+            url:'../admin/rollback_unit.php',
             dataType: 'json',
-            data:{id:<?php echo $res[0]->page_id; ?>},
+            data:{id:<?php echo $id; ?>},
             success: function(response){
                 $('#info-adm').modal("hide");
                 location.reload();

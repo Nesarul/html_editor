@@ -115,16 +115,14 @@ class unit{
         $response['Message']="Success";
     }
     public function getUnits($courseID){
-        $sql = "SELECT s.s_id,u.unit_id,u.unit_name,u.unit_title,u.unit_author,u.unit_created, c.course_name 
+        $sql = "SELECT s.s_id,u.unit_id,u.unit_name,u.unit_author,u.unit_created, c.course_name 
         FROM sort_unit AS s 
         INNER JOIN unit AS u ON u.unit_id = s.u_id 
         INNER JOIN course AS c ON c.course_id = s.c_id 
         WHERE s.c_id = ? ORDER BY s.s_ord ASC";
         return htmlEditor::getDb()->query($sql,$params = array($courseID))->getResults();     
     }
-    public function approveUnit($unitID){
-        htmlEditor::getDb()->update($this->getTable(),array('unit_id'=>$unitID),array('unit_status'=>1,'unit_approved_by'=>htmlEditor::getSSN()->user_id));
-    }
+    
     public function getStatus($unitID){
         return htmlEditor::getDb()->get('unit',array('unit_id','=',$unitID))->getResults();
     }
@@ -204,9 +202,28 @@ class pages{
     function delete($params){
         htmlEditor::getDb()->delete($this->getTable(),$params);
     }
-    function getPages($courseID,$unitID){
+    function getPages($unitID){
         
-        $sql = "SELECT * FROM pages WHERE unit_id = ? AND course_id = ?";
-        return htmlEditor::getDb()->query($sql,$params = array($unitID,$courseID))->getResults();     
+        $sql = "SELECT * FROM pages WHERE unit_id";
+        return htmlEditor::getDb()->get('pages',array('unit_id','=',$unitID))->getResults();
+    }
+    function getPageContents($pageID){
+        $sql = "SELECT u.unit_id,u.unit_name,p.page_id,p.page_name,p.page_caption,p.page_contents,p.page_status 
+        FROM pages AS p 
+        INNER JOIN unit AS u 
+        ON u.unit_id = p.unit_id WHERE p.page_id = ?";
+        return htmlEditor::getDb()->query($sql,$params = array($pageID))->getResults();     
+    }
+    function getPageStatus($pageID){
+        return htmlEditor::getDb()->get('pages',array('page_id','=',$pageID))->getResults();
+    }
+    public function approvePage($pageID){
+        htmlEditor::getDb()->update($this->getTable(),array('page_id'=>$pageID),array('page_status'=>1,'page_approved_by'=>htmlEditor::getSSN()->user_id));
+    }
+    public function rollbackPage($pageID){
+        htmlEditor::getDb()->update($this->getTable(),array('page_id'=>$pageID),array('page_status'=>0,'page_approved_by'=>0));
+    }
+    public function pageCreate($page_course_id,$page_unit_id,$page_name,$page_caption,$status,$approved){
+        htmlEditor::getDb()->insert($this->getTable(),array('course_id'=>$page_course_id,'unit_id'=>$page_unit_id,'page_name'=>$page_name,'page_caption'=>$page_caption,'page_contents'=>'','page_status'=>$status,'page_approved_by'=>$approved));
     }
 }

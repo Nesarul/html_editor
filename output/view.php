@@ -1,7 +1,11 @@
 <?php
     require_once('../admin/db/db.php');
-    $sql = "SELECT u.unit_name,u.unit_title,u.unit_contents,c.c_title, c.c_css,c.c_js, c_footer, c.footer_caption FROM unit AS u LEFT JOIN course AS c ON c.course_id = u.course_id WHERE u.unit_id = ?";
-    $res = db::getInstance()->query($sql,array($_GET['uid']))->getResults();
+    $sql = "SELECT p.page_contents,p.page_caption,p.page_name, c.c_title, c.c_css, c.c_js, c_footer, c.footer_caption 
+    FROM pages AS p 
+    LEFT JOIN course AS c 
+    ON c.course_id = p.course_id 
+    WHERE p.page_id = ?";
+    $res = db::getInstance()->query($sql,array($_GET['pageID']))->getResults();
     if(null == $res)
         exit(0);
 ?>
@@ -12,7 +16,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php echo($res[0]->c_js); ?>
-    <title><?php echo $res[0]->unit_title; ?></title>
+    <title><?php echo $res[0]->page_name; ?></title>
 
     <!-- CSS --> 
     <?php echo($res[0]->c_css); ?>
@@ -24,16 +28,16 @@
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <?php echo $res[0]->unit_contents; ?>
+                <?php echo $res[0]->page_contents; ?>
             </div>
         </div>
     </div>
 
 <script>
     $(function(){
-        var pk = "<?php echo $res[0]->unit_title; ?>";
+        var pc = "<?php echo $res[0]->page_caption; ?>";
         var fc = "<?php echo $res[0]->footer_caption; ?>";
-        $('#header-box h1').html(pk);
+        $('#header-box h1').html(pc);
         $('<style>#footer>.copyright::after{content:"'+fc+'";}</style>').appendTo('head');
     });
 </script>
