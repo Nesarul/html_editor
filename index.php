@@ -1,6 +1,8 @@
 <?php
-    require_once('./inc/header.php');
-    require_once('./admin/session/session.php');
+    define('BP',$_SERVER['DOCUMENT_ROOT']);
+    define('DS',DIRECTORY_SEPARATOR);
+    require_once(BP.DS.'html_editor'.DS.'inc'.DS.'header.php');
+    require_once(BP.DS.'html_editor'.DS.'admin'.DS.'session'.DS.'session.php');
     $data = Session::getInstance();
     if($data->logStatus === "logged")
         header("Location: ./dashboard/index.php");
@@ -121,7 +123,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="btn_create_user" onClick="createUser();">Register</button>
+                        <button type="button" class="btn btn-primary" id="btn_create_user" onClick="CrUser();">Register</button>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 
@@ -131,9 +133,13 @@
     </div>
 </div>
 <script>
-    function createUser()
+    function ts(){
+        alert("done");
+    }
+    function CrUser()
     {
         let myForm = document.getElementById('cu');
+        if(!myForm) alert("Failed to load form");
         let formData = new FormData(myForm);
         $.ajax({
             type: 'POST',
@@ -155,5 +161,5 @@
     }        
 </script>
 <?php
-    require_once("./inc/footer.php");
+   require_once(BP.DS.'html_editor'.DS.'inc'.DS.'footer.php');
 ?>
